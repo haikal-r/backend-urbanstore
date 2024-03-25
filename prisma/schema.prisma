@@ -19,3 +19,14 @@ model Product {
   image             String
 
 }
+
+model User {
+  id        Int @id @default(autoincrement())
+  name      String  @db.VarChar(255)
+  email     String   @unique(map: "email") @db.VarChar(255)
+  address   String?  @db.VarChar(255)
+  password  String?  @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0)
+
+}

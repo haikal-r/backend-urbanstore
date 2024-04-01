@@ -6,44 +6,58 @@ const {
   deleteUserById,
   editUserById,
 } = require("./user.service");
+const { apiResponse } = require("../../utils/apiResponse.utils");
+const { StatusCodes: status } = require("http-status-codes");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const users = await getAllUsers();
+  try {
+    const serviceResponse = await getAllUsers();
 
-  res.send(users);
+    return res.status(serviceResponse.code).json(serviceResponse);
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+  );
+  }
 });
 
 router.get("/:id", async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await getUserById(parseInt(userId));
+    const serviceResponse = await getUserById(parseInt(userId));
 
-    res.send(user);
-  } catch (err) {
-    res.status(400).send(err.message);
+    return res.status(serviceResponse.code).json(serviceResponse);
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+  );
   }
 });
 
 router.post("/", async (req, res) => {
-  const newUserData = req.body;
-  const user = await createUser(newUserData);
+  try {
+    const serviceResponse = await createUser(req.body);
 
-  res.send({
-    data: user,
-    message: "create User success",
-  });
+    return res.status(serviceResponse.code).json(serviceResponse);
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+  );
+  }
 });
 
 router.delete("/:id", async (req, res) => {
   try {
     const userId = req.params.id;
+    const serviceResponse = await deleteUserById(parseInt(userId));
 
-    await deleteUserById(parseInt(userId));
-    res.send("User Deleted");
-  } catch (err) {
-    res.status(400).send(err.message);
+    return res.status(serviceResponse.code).json(serviceResponse)
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+  );
   }
 });
 
@@ -51,40 +65,28 @@ router.patch("/:id", async (req, res) => {
   try {
     const userId = req.params.id;
     const userData = req.body;
+    const serviceResponse = await editUserById(parseInt(userId), userData);
 
-    const user = await editUserById(parseInt(userId), userData);
-
-    res.send({
-      data: user,
-      message: "edit data success",
-    });
-  } catch (err) {
-    res.status(400).send(err.message);
+    return res.status(serviceResponse.status).json(serviceResponse)
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
   }
 });
 
 router.put("/:id", async (req, res) => {
-  const userId = req.params.id;
-  const userData = req.body;
-
-  if (
-    !(
-      userData.title &&
-      userData.description &&
-      userData.price &&
-      userData.category&&
-      userData.image
+  try {
+    const userId = req.params.id;
+    const userData = req.body;
+    const serviceResponse = await editUserById(parseInt(userId), userData);
+  
+    return res.status(serviceResponse.status).json(serviceResponse)
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
     )
-  ) {
-    return res.status(400).send("some fields are missing !")
   }
-
-  const user = await editUserById(parseInt(userId), userData)
-
-  res.send({
-    data: user,
-    message: "edit data success",
-  })
-})
+});
 
 module.exports = router;

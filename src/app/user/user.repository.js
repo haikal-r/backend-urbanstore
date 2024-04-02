@@ -1,5 +1,4 @@
 const prisma = require("../../db");
-const { exclude } = require("../../utils/excludeFields.utils");
 
 const findUsers = async () => {
   const user = await prisma.user.findMany();
@@ -29,7 +28,12 @@ const findUserByEmail = async (email) => {
 
 const insertUser = async (newUserData) => {
   const user = await prisma.user.create({
-    data: newUserData,
+    data: {
+      name: newUserData.name,
+      email: newUserData.email,
+      address: newUserData.address || null,
+      password: newUserData.password,
+    },
   });
 
   return user;
@@ -48,12 +52,7 @@ const editUser = async (id, UserData) => {
     where: {
       id: id,
     },
-    data: {
-      title: UserData.title,
-      description: UserData.description,
-      image: UserData.image,
-      price: UserData.price,
-    },
+    data: UserData,
   });
 
   return user;

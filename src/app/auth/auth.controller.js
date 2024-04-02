@@ -1,76 +1,53 @@
-const { generateAccessToken } = require("../../utils/jwt.utils");
-const { getUserByEmail, createUser } = require("../user/user.service");
 const {
   noContentResponse,
-  apiResponse,
+  apiResponse
 } = require("../../utils/apiResponse.utils");
 const { StatusCodes: status } = require("http-status-codes");
 const AuthService = require("./auth.service");
-const {
-  authorizationUrl,
-  oauth2,
-  scopes,
-  oauth2Client,
-} = require("../../config/google.config");
+const { authorizationUrl } = require("../../config/google.config");
 
 const LoginByGoogle = (req, res) => {
-  res.redirect(authorizationUrl);
+  try {
+    return res.redirect(authorizationUrl);
+
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
+  }
 };
 
 const LoginGoogleCallback = async (req, res) => {
-  const { code } = req.query;
-
-  const { tokens } = await oauth2Client.getToken(code);
-
-  oauth2Client.setCredentials(tokens);
-
-  const { data } = await oauth2.userinfo.get();
-
-  if (!data.email || !data.name) {
-    return res.json({
-      data: data,
-    });
+  try {
+    const serviceResponse = await AuthService.loginGoogleCallback(req.query)
+    // * Integrated with frontend
+    // if (serviceResponse.code !== 200) return res.status(serviceResponse.code).json(serviceResponse)
+    // const token = await serviceResponse.data.token
+    // return res.redirect(`${process.env.BASE_URL}/auth-success?token=${token}`)
+    
+    return res.status(serviceResponse.code).json(serviceResponse)
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
   }
-
-  let user = await getUserByEmail(data.email);
-
-  if (!user) {
-    user = await createUser(data);
-  }
-
-  const payload = {
-    id: user?.id,
-    name: user?.name,
-    email: user?.email,
-    address: user?.address,
-  };
-
-  const token = generateAccessToken(payload);
-
-  // return res.redirect(`http://localhost:3000/auth-success?token=${token}`)
-
-  return res.json({
-    data: {
-      id: user.id,
-      name: user.name,
-      email: user?.email,
-      address: user.address,
-    },
-    token: token,
-  });
 };
 
 const Login = async (req, res) => {
   try {
     const serviceResponse = await AuthService.login(req.body);
+    if (serviceResponse.code !== 200) return res.status(serviceResponse.code).json(serviceResponse)
+
     res.cookie("refreshToken", serviceResponse.data.refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-    });
+  });
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return res.status(e.code).json(e);
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
   }
 };
 
@@ -80,7 +57,9 @@ const Register = async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return res.status(e.code).json(e);
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
   }
 };
 
@@ -91,39 +70,59 @@ const Logout = async (req, res) => {
 
     res.clearCookie("refreshToken");
 
-    return res
-      .status(status.OK)
-      .json(apiResponse(status.OK, "OK", "Logout Succesfully"));
+    return res.status(status.OK).json(apiResponse(status.OK, "OK", "Logout Succesfully"));
   } catch (e) {
-    return res
-      .status(e.code || status.INTERNAL_SERVER_ERROR)
-      .json(
-        apiResponse(
-          e.code || status.INTERNAL_SERVER_ERROR,
-          e.status || "INTERNAL_SERVER_ERROR",
-          e.message
-        )
-      );
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
   }
 };
 
 const RefreshToken = async (req, res) => {
   try {
-    const serviceResponse = await AuthService.refreshToken(req.body);
+    const serviceResponse = await AuthService.refreshToken(req.refreshToken);
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return res.status(e.code).json(e);
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
   }
 };
 
 const Me = async (req, res) => {
   try {
-    const serviceResponse = await AuthService.me(req.body);
+    const serviceResponse = await AuthService.me(req.user);
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return res.status(e.code).json(e);
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
   }
 };
+
+const SendEmail = async (req, res) => {
+  try {
+    const serviceResponse = await AuthService.sendEmail(req.body)
+
+    return res.status(serviceResponse.code).josn(serviceResponse)
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
+  }
+}
+
+const ForgotPassword = async (req, res) => {
+  try {
+    const serviceResponse = await AuthService.forgotPassword(req.user, req.body)
+
+    return res.status(serviceResponse.code).json(serviceResponse)
+  } catch (e) {
+    return res.status(e.code || status.INTERNAL_SERVER_ERROR).json(
+      apiResponse(e.code || status.INTERNAL_SERVER_ERROR, e.status || 'INTERNAL_SERVER_ERROR', e.message),
+    )
+  }
+}
 
 module.exports = {
   LoginByGoogle,
@@ -131,6 +130,8 @@ module.exports = {
   Login,
   Register,
   RefreshToken,
+  SendEmail,
+  ForgotPassword,
   Me,
   Logout,
-};
+}

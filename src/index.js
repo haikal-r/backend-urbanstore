@@ -38,5 +38,5 @@ routes(app);
 // Port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.info(`Server is running on port ${PORT}, http://localhost:${PORT}` );
+  console.info(`Server is running on port ${PORT}, ${process.env.BASE_URL}` );
 });

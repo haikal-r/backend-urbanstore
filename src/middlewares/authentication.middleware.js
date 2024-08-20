@@ -14,6 +14,7 @@ module.exports = {
   authentication: (req, res, next) => {
     try {
       const bearer = req.headers.authorization;
+      console.log(bearer)
       if (!bearer) throw unAuthorizedResponse();
 
       const token = bearer.split(" ")[1];
@@ -32,7 +33,7 @@ module.exports = {
       if (!refreshToken) throw noContentResponse("No Refresh Token Provided");
 
       req.refreshToken = verifyRefreshToken(refreshToken);
-
+      
       next();
     } catch (e) {
       const err = tokenErr(e);
@@ -40,4 +41,20 @@ module.exports = {
       return res.status(e.code).json(e);
     }
   },
+  optionalAuthentication: (req, res, next) => {
+    try {
+        const bearer = req.headers.authorization;
+        if (!bearer) throw unAuthorizedResponse();
+
+        const token = bearer.split(' ')[1];
+        if (!token) throw unAuthorizedResponse();
+
+        req.user = verifyAccessToken(token);
+
+        next();
+    } catch (e) {
+        req.user = null;
+        next();
+    }
+},
 };

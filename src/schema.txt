@@ -1,9 +1,12 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -12,10 +15,10 @@ model Product {
   uuid        String      @unique @default(uuid())  
   storeId     Int
   categoryId  Int
-  name        String      @unique
+  name        String      @unique @db.VarChar(255)
   slug        String      
   price       Decimal
-  description String?
+  description String?     @db.Text
   stock       Int
   images      Json
   cartItems   CartItem[]
@@ -47,22 +50,23 @@ model CartItem {
   quantity    Int         @default(1)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
 }
 
 model User {
   id          Int      @id @default(autoincrement()) 
   uuid        String   @unique @default(uuid())
-  name        String   
-  username    String   
-  email       String   @unique
-  address     String?  
-  password    String?  
-  picture     String?  
+  name        String   @db.VarChar(100)
+  username    String   @db.VarChar(100) 
+  email       String   @unique(map: "email") @db.VarChar(255)
+  address     String?  @db.VarChar(255)
+  password    String?  @db.VarChar(255)
+  picture     String?  @db.VarChar(100)
   stores      Store[]
   orders      Order[]
   carts       Cart[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  createdAt   DateTime @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime @default(now()) @db.Timestamp(0)
 }
 
 model Store {
@@ -70,9 +74,9 @@ model Store {
   uuid        String      @unique @default(uuid())
   user        User        @relation(fields: [userId], references: [id])
   userId      Int
-  name        String      @unique
+  name        String      @unique @db.VarChar(255)
   slug        String      @unique
-  description String?
+  description String?     @db.Text
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   products    Product[]
@@ -83,13 +87,13 @@ model Store {
 
 model Category {
   id              Int         @id @default(autoincrement())
-  name            String      @unique
-  slug            String      @unique
+  name            String      @unique @db.VarChar(100)
+  slug            String      @unique @db.VarChar(100)
   products        Product[]
 }
 
 enum OrderStatus {
-  PENDING
+  PENDING_PAYMENT
   PAID
   CANCELED
 }
@@ -100,7 +104,7 @@ model Order {
   User             User            @relation(fields: [userId], references: [id])
   totalPrice       Decimal
   token            String
-  status           OrderStatus     @default(PENDING)
+  status           OrderStatus     @default(PENDING_PAYMENT)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   orderItems       OrderItem[]
@@ -118,8 +122,8 @@ model OrderItem {
   product          Product         @relation(fields: [productId], references: [id])
   storeId          Int          
   store            Store           @relation(fields: [storeId], references: [id])
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @default(now())
+  createdAt        DateTime        @default(now()) @db.Timestamp(0)
+  updatedAt        DateTime        @default(now()) @db.Timestamp(0)
 
   @@index([orderId])
 }

@@ -12,8 +12,8 @@ const errorCustomMessage = (errors) =>
 module.exports = {
   apiResponse: (code, status, message, data) => {
     const result = {};
-    result.code = code || StatusCodes.OK;
-    result.status = status || "OK";
+    result.code = code;
+    result.status = status;
     result.message = message;
     result.data = data;
 

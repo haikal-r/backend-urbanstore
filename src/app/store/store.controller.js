@@ -1,48 +1,11 @@
-const { StatusCodes: status }  = require("http-status-codes")
-const {
-  getAllProducts,
-  getAllCategories,
-  getProductsBySearch,
-  createProduct,
-  getProductsByCategorySlug,
-  deleteProductById,
-  editProductById,
-  createCategory,
-  getProductByProductId,
-} = require("./product.service");
-const { apiResponse } = require("../../utils/apiResponse.utils");
-
+const { StatusCodes:status } = require("http-status-codes")
+const StoreService = require("./store.service")
+const { apiResponse } = require("../../utils/apiResponse.utils")
 
 module.exports = {
-  getAllProducts: async (req, res) => {
+  getStores: async (req, res) => {
     try {
-      const serviceResponse = await getAllProducts(req);
-  
-      return res.status(serviceResponse.code).json(serviceResponse)
-    } catch (e) {
-      return apiResponse({
-        code: e.code || status.INTERNAL_SERVER_ERROR,
-        status: e.status || "INTERNAL_SERVER_ERROR", 
-        message: e.message
-      });
-    }
-  },
-  getProductsBySearch: async (req, res) => {
-    try {
-      const serviceResponse = await getProductsBySearch(req);
-  
-      return res.status(serviceResponse.code).json(serviceResponse)
-    } catch (e) {
-      return apiResponse({
-        code: e.code || status.INTERNAL_SERVER_ERROR,
-        status: e.status || "INTERNAL_SERVER_ERROR", 
-        message: e.message
-      });
-    }
-  },
-  getAllCategories: async (req, res) => {
-    try {
-      const serviceResponse = await getAllCategories()
+      const serviceResponse = await StoreService.getStores(req);
 
       return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
@@ -53,9 +16,9 @@ module.exports = {
       });
     }
   },
-  getProductByCategorySlug: async (req, res) => {
+  getStoreByUser: async (req, res) => {
     try {
-      const serviceResponse = await getProductsByCategorySlug(req)
+      const serviceResponse = await StoreService.getStoreByUser(req);
 
       return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
@@ -66,10 +29,10 @@ module.exports = {
       });
     }
   },
-  getProductByProductId: async (req, res) => {
+  getStore: async (req, res) => {
     try {
-      const serviceResponse = await getProductByProductId(req);
-  
+      const serviceResponse = await StoreService.getStore(req);
+
       return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
       return apiResponse({
@@ -79,11 +42,10 @@ module.exports = {
       });
     }
   },
-
-  getProductByUUID: async (req, res) => {
+  getProducts: async (req, res) => {
     try {
-      const serviceResponse = await getProductByUUID(req);
-  
+      const serviceResponse = await StoreService.getProducts(req);
+
       return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
       return apiResponse({
@@ -93,26 +55,11 @@ module.exports = {
       });
     }
   },
-  
-  createProduct: async (req, res) => {
-    try {    
-      const serviceResponse = await createProduct(req);
-  
-      return res.status(serviceResponse.code).json(serviceResponse.message)
-    } catch (e) {
-      return apiResponse({
-        code: e.code || status.INTERNAL_SERVER_ERROR,
-        status: e.status || "INTERNAL_SERVER_ERROR", 
-        message: e.message
-      });
-    }
-  },
-  
-  createCategory: async (req, res) => {
+  getProductById: async (req, res) => {
     try {
-      const serviceResponse = await createCategory(req)
+      const serviceResponse = await StoreService.getProductById(req);
 
-      return res.status(serviceResponse.code).json(serviceResponse.message)
+      return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
       return apiResponse({
         code: e.code || status.INTERNAL_SERVER_ERROR,
@@ -121,12 +68,11 @@ module.exports = {
       });
     }
   },
+  createStore: async (req, res) => {
+    try {
+      const serviceResponse = await StoreService.createStore(req);
 
-  deleteProduct: async (req, res) => {
-    try {
-      const serviceResponse = await deleteProductById(req);
-  
-      return res.status(serviceResponse.code).json(serviceResponse.message)
+      return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
       return apiResponse({
         code: e.code || status.INTERNAL_SERVER_ERROR,
@@ -135,12 +81,11 @@ module.exports = {
       });
     }
   },
-  
-  patchProduct: async (req, res) => {
+  patchStore: async (req, res) => {
     try {
-      const serviceResponse = await editProductById(req);
-  
-      return res.status(serviceResponse.code).json(serviceResponse.message)
+      const serviceResponse = await StoreService.editStore(req);
+
+      return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
       return apiResponse({
         code: e.code || status.INTERNAL_SERVER_ERROR,
@@ -149,12 +94,11 @@ module.exports = {
       });
     }
   },
-  
-  putProduct: async (req, res) => {
+  putStore: async (req, res) => {
     try {
-      const serviceResponse = await editProductById(req);
-  
-      return res.status(serviceResponse.code).json(serviceResponse.message)
+      const serviceResponse = await StoreService.editStore(req);
+
+      return res.status(serviceResponse.code).json(serviceResponse)
     } catch (e) {
       return apiResponse({
         code: e.code || status.INTERNAL_SERVER_ERROR,
@@ -162,10 +106,18 @@ module.exports = {
         message: e.message
       });
     }
-  }
+  },
+  deleteStore: async (req, res) => {
+    try {
+      const serviceResponse = await StoreService.deleteStore(req);
+
+      return res.status(serviceResponse.code).json(serviceResponse)
+    } catch (e) {
+      return apiResponse({
+        code: e.code || status.INTERNAL_SERVER_ERROR,
+        status: e.status || "INTERNAL_SERVER_ERROR", 
+        message: e.message
+      });
+    }
+  },
 }
-
-
-
-
-

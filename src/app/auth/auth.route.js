@@ -9,6 +9,7 @@ const {
   Logout,
   SendEmail,
   ForgotPassword,
+  GoogleLogin,
 } = require("./auth.controller");
 const {
   authentication,
@@ -18,7 +19,6 @@ const { RegisterMiddleware, LoginMiddleware, SendEmailMiddleware, ForgotPassword
 
 const router = express.Router();
 
-// Login Google
 router.get("/auth/google", LoginByGoogle);
 router.get("/auth/google/callback", LoginGoogleCallback);
 
@@ -26,7 +26,7 @@ router.get("/auth/google/callback", LoginGoogleCallback);
 router.post("/register", RegisterMiddleware, Register);
 router.post("/login", LoginMiddleware, Login);
 router.get("/me", authentication, Me);
-router.post("/logout", authentication, Logout);
+router.post("/logout", Logout);
 
 router.post("/send-email",SendEmailMiddleware, SendEmail)
 router.post("/forgot-password/:token", ForgotPasswordMiddleware, ForgotPassword)

@@ -11,6 +11,18 @@ const findUserById = async (id) => {
     where: {
       id: id,
     },
+    include: {
+      carts: {
+        select:{
+          id: true
+        }
+      },
+      orders: {
+        select: {
+          id: true
+        }
+      }
+    }
   });
 
   return user;
@@ -21,6 +33,18 @@ const findUserByEmail = async (email) => {
     where: {
       email: email,
     },
+    include: {
+      carts: {
+        select:{
+          id: true
+        }
+      },
+      orders: {
+        select: {
+          id: true
+        }
+      }
+    }
   });
 
   return user;
@@ -29,11 +53,14 @@ const findUserByEmail = async (email) => {
 const insertUser = async (newUserData) => {
   const user = await prisma.user.create({
     data: {
-      name: newUserData.name,
+      name: newUserData.name || "",
+      username: newUserData.username || "",
       email: newUserData.email,
+      picture: newUserData.picture,
       address: newUserData.address || null,
-      password: newUserData.password,
+      password: newUserData.password || "",
     },
+    
   });
 
   return user;
@@ -47,12 +74,17 @@ const deleteUser = async (id) => {
   });
 };
 
-const editUser = async (id, UserData) => {
+const editUser = async (id, data) => {
   const user = await prisma.user.update({
     where: {
       id: id,
     },
-    data: UserData,
+    data: {
+      name: data.name ,
+      email: data.email ,
+      address: data.address ,
+      password: data.password ,
+    },
   });
 
   return user;

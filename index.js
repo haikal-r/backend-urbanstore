@@ -1,13 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const { routes } = require("./routes");
+const { routes } = require("./src/routes");
 const { StatusCodes: status } = require("http-status-codes");
-const { apiResponse } = require("./utils/apiResponse.utils");
+const { apiResponse } = require("./src/utils/apiResponse.utils");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const multer = require("multer");
-const axios = require("axios");
-const FormData = require('form-data');
 
 dotenv.config();
 const app = express();

@@ -11,5 +11,6 @@
       "dest": "index.js",
       "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     }
-  ]
+  ],
+  "buildCommand": "npx prisma generate"
 }

@@ -4,4 +4,4 @@ node_modules/
 .env.development
 .vercel
 
-prisma/migrations*
+prisma/migrations/

@@ -54,7 +54,6 @@ app.get((err, req, res, next) => {
 routes(app);
 
 // Port
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.info(`Server is running on port ${PORT}, ${process.env.BASE_URL}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });

@@ -11,5 +11,11 @@
       "dest": "/",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "VERCEL_BUILDER_NO_CACHE": "1"
+    },
+    "command": "npm run build"
+  }
 }

@@ -6,12 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "vercel-build": "prisma generate && prisma migrate deploy",
+    "vercel-build": "npx prisma generate && npx prisma migrate deploy",
     "start": "node server.js",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy",
-    "migrate:status": "prisma migrate status",
-    "generate": "prisma generate",
+    "migrate:dev": "npx prisma migrate dev",
+    "migrate:deploy": "npx prisma migrate deploy",
+    "migrate:status": "npx prisma migrate status",
+    "generate": "npx prisma generate",
     "seed": "node prisma/seed.js"
   },
   "author": "",

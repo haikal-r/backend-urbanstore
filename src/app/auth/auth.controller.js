@@ -66,14 +66,14 @@ const LoginGoogleCallback = async (req, res) => {
 
     res.cookie("accessToken", serviceResponse.data.accessToken, {
       maxAge: 15 * 60 * 1000,
-      sameSite: "lax",
-      secure: true, // untuk HTTPS
+      sameSite: "none",
+      secure: true, 
     });
 
     res.cookie("refreshToken", serviceResponse.data.refreshToken, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
       secure: true
     });
 
@@ -95,15 +95,19 @@ const Login = async (req, res) => {
 
     res.cookie("accessToken", serviceResponse.data.accessToken, {
       maxAge: 15 * 60 * 1000,
-      sameSite: "lax",
+      sameSite: "none",
       secure: true, 
+      path: '/',
+      domain: process.env.BASE_URL
     });
 
     res.cookie("refreshToken", serviceResponse.data.refreshToken, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "lax",
-      secure: true
+      sameSite: "none",
+      secure: true,
+      path: '/',
+      domain: process.env.BASE_URL
     });
 
     return res.status(serviceResponse.code).json(serviceResponse);
@@ -155,7 +159,7 @@ const RefreshToken = async (req, res) => {
 
     res.cookie("accessToken", serviceResponse.data, {
       maxAge: 15 * 60 * 1000,
-      sameSite: "lax",
+      sameSite: "none",
       secure: true, 
     });
 

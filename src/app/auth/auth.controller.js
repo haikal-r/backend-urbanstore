@@ -66,7 +66,7 @@ const LoginGoogleCallback = async (req, res) => {
 
     res.cookie("accessToken", serviceResponse.data.accessToken, {
       httpOnly: false,
-      sameSite: "Strict",
+      sameSite: "None",
       secure: true, 
       maxAge: 15 * 60 * 1000,
     });
@@ -96,7 +96,7 @@ const Login = async (req, res) => {
 
     res.cookie("accessToken", serviceResponse.data.accessToken, {
       httpOnly: false,
-      sameSite: "Strict",
+      sameSite: "None",
       secure: true, 
       maxAge: 15 * 60 * 1000,
     });
@@ -157,7 +157,7 @@ const RefreshToken = async (req, res) => {
 
     res.cookie("accessToken", serviceResponse.data, {
       maxAge: 15 * 60 * 1000,
-      sameSite: "Strict",
+      sameSite: "None",
       secure: true, 
       httpOnly: false
     });

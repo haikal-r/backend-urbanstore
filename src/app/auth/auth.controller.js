@@ -64,15 +64,17 @@ const LoginGoogleCallback = async (req, res) => {
     if (serviceResponse.code !== 200)
       return res.status(serviceResponse.code).json(serviceResponse);
 
-    res.cookie('accessToken', serviceResponse.data.accessToken, {
-      maxAge: 15 * 60 * 1000, 
-      sameSite: 'strict', 
+    res.cookie("accessToken", serviceResponse.data.accessToken, {
+      maxAge: 15 * 60 * 1000,
+      sameSite: "lax",
+      secure: true, // untuk HTTPS
     });
 
-    res.cookie('refreshToken', serviceResponse.data.refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000, 
-      httpOnly: true, 
-      sameSite: 'strict', 
+    res.cookie("refreshToken", serviceResponse.data.refreshToken, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: true
     });
 
     return res.redirect(`${process.env.FRONT_END_URL}`);
@@ -91,16 +93,17 @@ const Login = async (req, res) => {
     if (serviceResponse.code !== 200)
       return res.status(serviceResponse.code).json(serviceResponse);
 
-    res.cookie('accessToken', serviceResponse.data.accessToken, {
-      maxAge: 15 * 60 * 1000, 
-      httpOnly: true, 
-      sameSite: 'strict', 
+    res.cookie("accessToken", serviceResponse.data.accessToken, {
+      maxAge: 15 * 60 * 1000,
+      sameSite: "lax",
+      secure: true, 
     });
 
-    res.cookie('refreshToken', serviceResponse.data.refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000, 
-      httpOnly: true, 
-      sameSite: 'strict', 
+    res.cookie("refreshToken", serviceResponse.data.refreshToken, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: true
     });
 
     return res.status(serviceResponse.code).json(serviceResponse);
@@ -150,10 +153,10 @@ const RefreshToken = async (req, res) => {
   try {
     const serviceResponse = await AuthService.refreshToken(req);
 
-    res.cookie('accessToken', serviceResponse.data, {
-      httpOnly: true, 
+    res.cookie("accessToken", serviceResponse.data, {
       maxAge: 15 * 60 * 1000,
-      sameSite: 'strict', 
+      sameSite: "lax",
+      secure: true, 
     });
 
     return res.status(serviceResponse.code).json(serviceResponse);

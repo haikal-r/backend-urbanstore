@@ -24,7 +24,6 @@ const objOrder = (order) => ({
 
 module.exports = {
   OrderTransformer: (order) => {
-    console.log(order)
     const orderObj = objOrder(order)
     delete orderObj.createdAt
     delete orderObj.updatedAt

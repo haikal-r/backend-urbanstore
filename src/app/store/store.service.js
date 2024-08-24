@@ -79,7 +79,6 @@ module.exports = {
   getProducts: async (req) => {
     try {
       const { slug } = req.params;
-      console.log(slug);
       const store = await findStoreBySlug(slug);
       if (!store) throw badRequestResponse("No Store Found");
 

@@ -14,7 +14,6 @@ module.exports = {
   authentication: (req, res, next) => {
     try {
       const bearer = req.headers.authorization;
-      console.log(bearer)
       if (!bearer) throw unAuthorizedResponse();
 
       const token = bearer.split(" ")[1];

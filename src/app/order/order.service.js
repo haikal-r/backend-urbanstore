@@ -41,7 +41,6 @@ module.exports = {
 
       const cartSummary = CartSummaryTransformer(carts);
       const cartItems = carts.map((cart) => ProductCartTransformer(cart));
-      console.log("cartItems =>", cartItems);
 
       if (carts.length === 0) throw badRequestResponse("No Cart Items");
 
@@ -56,8 +55,6 @@ module.exports = {
         category: item.categoryId || "electronics",
         merchant_id: item.storeId,
       }));
-
-      // console.log("item details =>",itemDetails)
 
       const parameter = {
         transaction_details: {
@@ -199,9 +196,6 @@ module.exports = {
 
     try {
       const { order_id, transaction_status, fraud_status } = data;
-
-      console.log('order id =>', order_id)
-      console.log('transaction status =>', transaction_status)
       switch (transaction_status) {
         case "pending":
           if (fraud_status === "accept") {
@@ -210,12 +204,10 @@ module.exports = {
           break;
 
         case "settlement":
-          console.log('Updating order status to PAID for order_id:', order_id);
           await updateOrder(order_id, "PAID");
           break;
 
         case "pending":
-          console.log('LINE 218 Updating order status to PAID for order_id:', order_id);
           await updateOrder(order_id, "PENDING");
           break;
 

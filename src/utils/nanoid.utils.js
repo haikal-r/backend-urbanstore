@@ -3,7 +3,6 @@ const importNanoid = async () => {
     const nanoidModule = await import("nanoid")
     return nanoidModule.nanoid
   } catch (error) {
-    console.log("Error saat mengimpor modul nanoid:", error);
     return null;
   }
 }

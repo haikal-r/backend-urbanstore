@@ -7,7 +7,7 @@ const {
   findProductsByLimit,
   findProductsBySearch,
   findProductByProductUuid,
-  editProduct
+  editProduct,
 } = require("./product.repository");
 const {
   apiResponse,
@@ -18,7 +18,7 @@ const slugify = require("slugify");
 const { findStoreBySlug } = require("../store/store.repository");
 const { ProductTransformer } = require("../../helpers/product.transformer");
 const axios = require("axios");
-const FormData = require('form-data');
+const FormData = require("form-data");
 
 const getAllProducts = async (req) => {
   try {
@@ -45,7 +45,7 @@ const getAllProducts = async (req) => {
 const getProductsBySearch = async (req) => {
   try {
     const { query } = req.query;
-    console.log(query);
+
     const products = await findProductsBySearch(query);
 
     return apiResponse(status.OK, "OK", "Success fetching product", products);
@@ -125,24 +125,18 @@ const createProduct = async (req) => {
     const { user } = req;
     const { name, price, description, stock, category } = req.body;
 
-    console.log(typeof price,price)
-    console.log('line 127 =>', req.files)
-
     if (!user) throw badRequestResponse("Please sign in");
 
     const store = await findStoreBySlug(slug);
     if (!store) throw badRequestResponse("Store not found");
 
     if (!req.files || req.files.length === 0) {
-      return badRequestResponse('No files uploaded')
+      return badRequestResponse("No files uploaded");
     }
-
 
     const uploadedUrls = [];
 
     for (const file of req.files) {
-      console.log("line 142 =>", file.originalname);
-      console.log("line 143 =>", file.buffer);
       const formData = new FormData();
       formData.append("image", file.buffer, file.originalname);
 

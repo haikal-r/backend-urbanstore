@@ -96,7 +96,6 @@ module.exports = {
     });
   },
   deleteCartItem: async (id) => {
-    console.log(id)
     if (Array.isArray(id)) {
       await prisma.cartItem.deleteMany({
         where: {

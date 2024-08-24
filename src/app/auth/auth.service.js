@@ -28,7 +28,6 @@ module.exports = {
   register: async (payload) => {
     try {
       const { name, email, username, password, address } = payload;
-      console.log(payload);
       const hashedPassword = await hashPassword(password);
 
       const data = {
@@ -80,7 +79,6 @@ module.exports = {
 
       oauth2Client.setCredentials(tokens);
       const { data: dataGoogle } = await oauth2.userinfo.get();
-      console.log(dataGoogle)
 
       if (!dataGoogle.email || !dataGoogle.name)
         throw badRequestResponse("User not found");

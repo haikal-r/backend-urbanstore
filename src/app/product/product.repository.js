@@ -152,7 +152,6 @@ const deleteProduct = async (productId) => {
 };
 
 const updateProduct = async (productId, stock) => {
-  console.log(stock)
   if (
     Array.isArray(productId) &&
     Array.isArray(stock) &&

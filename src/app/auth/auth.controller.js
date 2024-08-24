@@ -64,21 +64,24 @@ const LoginGoogleCallback = async (req, res) => {
     if (serviceResponse.code !== 200)
       return res.status(serviceResponse.code).json(serviceResponse);
 
-    res.cookie("accessToken", serviceResponse.data.accessToken, {
+    const accessToken = serviceResponse.data.accessToken
+    const refreshToken = serviceResponse.data.refreshToken
+
+    res.cookie("accessToken", accessToken, {
       httpOnly: false,
       sameSite: "None",
       secure: true, 
       maxAge: 15 * 60 * 1000,
     });
 
-    res.cookie("refreshToken", serviceResponse.data.refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "Strict",
       secure: true
     });
 
-    return res.redirect(`${process.env.FRONT_END_URL}`);
+    return res.redirect(`${process.env.FRONT_END_URL}/sign-in?token=${accessToken}`);
   } catch (e) {
     return apiResponse(
       e.code || status.INTERNAL_SERVER_ERROR,

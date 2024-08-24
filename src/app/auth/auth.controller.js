@@ -68,6 +68,8 @@ const LoginGoogleCallback = async (req, res) => {
       maxAge: 15 * 60 * 1000,
       sameSite: "none",
       secure: true, 
+      path: '/',
+      domain: process.env.FRONT_END_URL
     });
 
     res.cookie("refreshToken", serviceResponse.data.refreshToken, {
@@ -98,7 +100,7 @@ const Login = async (req, res) => {
       sameSite: "none",
       secure: true, 
       path: '/',
-      domain: process.env.BASE_URL
+      domain: process.env.FRONT_END_URL
     });
 
     res.cookie("refreshToken", serviceResponse.data.refreshToken, {
@@ -161,6 +163,8 @@ const RefreshToken = async (req, res) => {
       maxAge: 15 * 60 * 1000,
       sameSite: "none",
       secure: true, 
+      path: '/',
+      domain: process.env.FRONT_END_URL
     });
 
     return res.status(serviceResponse.code).json(serviceResponse);

@@ -146,11 +146,7 @@ const Logout = async (req, res) => {
       })
     );
   } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
+    return res.status(e.code).json(e);
   }
 };
 

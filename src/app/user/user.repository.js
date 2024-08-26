@@ -11,18 +11,6 @@ const findUserById = async (id) => {
     where: {
       id: id,
     },
-    include: {
-      carts: {
-        select:{
-          id: true
-        }
-      },
-      orders: {
-        select: {
-          id: true
-        }
-      }
-    }
   });
 
   return user;
@@ -33,18 +21,6 @@ const findUserByEmail = async (email) => {
     where: {
       email: email,
     },
-    include: {
-      carts: {
-        select:{
-          id: true
-        }
-      },
-      orders: {
-        select: {
-          id: true
-        }
-      }
-    }
   });
 
   return user;

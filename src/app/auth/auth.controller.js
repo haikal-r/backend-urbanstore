@@ -16,54 +16,6 @@ const {
 const GoogleLogin = async (req, res) => {
   try {
     const serviceResponse = await AuthService.googleLogin(req);
-    return res.status(serviceResponse.code).json(serviceResponse);
-  } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
-  }
-};
-
-const LoginByGoogle = (req, res) => {
-  try {
-    const oAuth2Client = new OAuth2Client(
-      GOOGLE_CLIENT_ID,
-      GOOGLE_CLIENT_SECRET,
-      `${BASE_URL}/auth/google/callback`
-    );
-
-    // Generate the url that will be used for the consent dialog.
-    const scopes = [
-      "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.googleapis.com/auth/userinfo.profile",
-    ];
-
-    const authorizationUrl = oAuth2Client.generateAuthUrl({
-      access_type: "offline",
-      scope: scopes,
-      include_granted_scopes: true,
-    });
-
-    // res.json({ url: authorizationUrl })
-    res.redirect(authorizationUrl);
-  } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
-  }
-};
-
-const LoginGoogleCallback = async (req, res) => {
-  try {
-    const serviceResponse = await AuthService.loginGoogleCallback(req);
-    // * Integrated with frontend
-    if (serviceResponse.code !== 200)
-      return res.status(serviceResponse.code).json(serviceResponse);
-
     const accessToken = serviceResponse.data.accessToken
     const refreshToken = serviceResponse.data.refreshToken
 
@@ -81,7 +33,7 @@ const LoginGoogleCallback = async (req, res) => {
       secure: true
     });
 
-    return res.redirect(`${process.env.FRONT_END_URL}/sign-in?token=${accessToken}`);
+    return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
     return apiResponse(
       e.code || status.INTERNAL_SERVER_ERROR,
@@ -90,6 +42,7 @@ const LoginGoogleCallback = async (req, res) => {
     );
   }
 };
+
 
 const Login = async (req, res) => {
   try {
@@ -213,8 +166,6 @@ const ForgotPassword = async (req, res) => {
 };
 
 module.exports = {
-  LoginByGoogle,
-  LoginGoogleCallback,
   GoogleLogin,
   Login,
   Register,

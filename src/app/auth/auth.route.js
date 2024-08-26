@@ -1,7 +1,5 @@
 const express = require("express");
 const {
-  LoginByGoogle,
-  LoginGoogleCallback,
   Login,
   Register,
   RefreshToken,
@@ -19,8 +17,7 @@ const { RegisterMiddleware, LoginMiddleware, SendEmailMiddleware, ForgotPassword
 
 const router = express.Router();
 
-router.get("/auth/google", LoginByGoogle);
-router.get("/auth/google/callback", LoginGoogleCallback);
+router.post('/auth/google', GoogleLogin);
 
 // Login Reguler
 router.post("/register", RegisterMiddleware, Register);

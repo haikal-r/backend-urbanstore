@@ -23,6 +23,8 @@ const {
   generateOAuthPassword,
   generateOAuthUsername,
 } = require("../../helpers/oauth.helper");
+const { google } = require("../../config/oauth.config");
+const { OAuth2Client } = require("google-auth-library");
 
 module.exports = {
   register: async (payload) => {
@@ -61,6 +63,7 @@ module.exports = {
       if (user.carts[0] == undefined) await insertCart(user.id);
 
       return apiResponse(status.OK, "OK", "Success Login", {
+        data: user,
         accessToken,
         refreshToken,
       });
@@ -72,13 +75,15 @@ module.exports = {
       );
     }
   },
-  loginGoogleCallback: async (req) => {
+  googleLogin: async (req) => {
     try {
-      const { code } = req.query;
-      const { tokens } = await oauth2Client.getToken(code);
+      const { tokens } = await google.getToken(req.body.code);
 
-      oauth2Client.setCredentials(tokens);
-      const { data: dataGoogle } = await oauth2.userinfo.get();
+      const ticket = await google.verifyIdToken({
+        idToken: tokens.id_token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const dataGoogle = ticket.getPayload();
 
       if (!dataGoogle.email || !dataGoogle.name)
         throw badRequestResponse("User not found");
@@ -86,7 +91,7 @@ module.exports = {
       const user = await findUserByEmail(dataGoogle.email);
       if (!user) {
         const username = generateOAuthUsername(dataGoogle.name);
-        const password = await generateOAuthPassword(dataGoogle.email)
+        const password = await generateOAuthPassword(dataGoogle.email);
 
         const newUser = await insertUser({
           name: dataGoogle.name,
@@ -95,23 +100,25 @@ module.exports = {
           email: dataGoogle.email,
           picture: dataGoogle.picture,
         });
-        const data = exclude(newUser, ["createdAt", "updatedAt"]);
+        const data = exclude(newUser, ["id", "createdAt", "updatedAt"]);
         const accessToken = generateAccessToken(data);
         const refreshToken = generateRefreshToken(data);
 
         await insertCart(newUser.id);
 
         return apiResponse(status.OK, "OK", "Success Login by Google", {
+          data,
           accessToken,
           refreshToken,
         });
       }
 
-      const data = exclude(user, ["createdAt", "updatedAt"]);
+      const data = exclude(user, ["id", "createdAt", "updatedAt"]);
       const accessToken = generateAccessToken(data);
       const refreshToken = generateRefreshToken(data);
 
       return apiResponse(status.OK, "OK", "Success Login by Google", {
+        data,
         accessToken,
         refreshToken,
       });

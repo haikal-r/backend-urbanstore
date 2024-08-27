@@ -90,7 +90,6 @@ const Logout = async (req, res) => {
     if (!refreshToken) throw noContentResponse("No Refresh token Provided");
 
     res.clearCookie("refreshToken");
-    res.clearCookie("accessToken");
 
     return res.status(status.OK).json(
       apiResponse({

@@ -96,22 +96,26 @@ module.exports = {
     try {
       const { user } = req;
       const { productId } = req.body;
+      console.log(req.body)
+      console.log(productId)
 
       const cart = await findCartByUserId(user.id);
       if (!cart) throw badRequestResponse("User Not Found");
 
       const cartItems = cart.map((item) => item.cartItems);
+      
 
       //* Delete 1 Product
       if (typeof productId === "number") {
         const product = cartItems[0].find(
           (item) => item.productId === productId
         );
+        console.log(product)
         if (!product) throw badRequestResponse("Product Not Found");
 
         await deleteCartItem(product.id);
       } else {
-        return apiResponse(
+        throw apiResponse(
           e.code || status.INTERNAL_SERVER_ERROR,
           e.status || "INTERNAL_SERVER_ERROR",
           e.message

@@ -28,7 +28,7 @@ module.exports = {
   },
   refreshToken: (req, res, next) => {
     try {
-      const { refreshToken } = req.cookies;
+      const { refreshToken } = req.body;
       if (!refreshToken) throw noContentResponse("No Refresh Token Provided");
 
       req.refreshToken = verifyRefreshToken(refreshToken);

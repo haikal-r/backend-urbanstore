@@ -60,8 +60,6 @@ module.exports = {
       const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshToken(user);
 
-      if (user.carts[0] == undefined) await insertCart(user.id);
-
       return apiResponse(status.OK, "OK", "Success Login", {
         data: user,
         accessToken,

@@ -15,7 +15,7 @@ const {
 } = require("../../utils/apiResponse.utils");
 const moment = require("moment");
 const crypto = require("crypto");
-const { findUserById } = require("../user/user.repository");
+const { findUserById, findUserByEmail } = require("../user/user.repository");
 const {
   deleteCartItem,
   findCartByUserId,
@@ -32,10 +32,10 @@ const { OrderTransformer } = require("../../helpers/order.transformer");
 module.exports = {
   createOrder: async (req) => {
     try {
-      const { id } = req.user;
-      const user = await findUserById(id);
+      const { email } = req.user;
+      const user = await findUserByEmail(email);
 
-      const data = await findCartByUserId(id);
+      const data = await findCartByUserId(user.id);
       const cartId = data.map((cart) => cart.id)[0];
       const carts = await findCartItemsByCartId(cartId);
 

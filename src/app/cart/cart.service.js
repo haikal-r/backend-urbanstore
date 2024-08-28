@@ -96,8 +96,6 @@ module.exports = {
     try {
       const { user } = req;
       const { productId } = req.body;
-      console.log(req.body)
-      console.log(productId)
 
       const cart = await findCartByUserId(user.id);
       if (!cart) throw badRequestResponse("User Not Found");
@@ -110,7 +108,6 @@ module.exports = {
         const product = cartItems[0].find(
           (item) => item.productId === productId
         );
-        console.log(product)
         if (!product) throw badRequestResponse("Product Not Found");
 
         await deleteCartItem(product.id);

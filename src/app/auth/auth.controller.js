@@ -4,34 +4,10 @@ const {
 } = require("../../utils/apiResponse.utils");
 const { StatusCodes: status } = require("http-status-codes");
 const AuthService = require("./auth.service");
-const { authorizationUrl } = require("../../config/google.config");
-const { OAuth2Client } = require("google-auth-library");
-const {
-  BASE_URL,
-  API_VERSION,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-} = require("../../constants/config");
 
 const GoogleLogin = async (req, res) => {
   try {
     const serviceResponse = await AuthService.googleLogin(req);
-    const accessToken = serviceResponse.data.accessToken
-    const refreshToken = serviceResponse.data.refreshToken
-
-    res.cookie("accessToken", accessToken, {
-      httpOnly: false,
-      sameSite: "None",
-      secure: true, 
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "Strict",
-      secure: true
-    });
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
@@ -47,22 +23,6 @@ const GoogleLogin = async (req, res) => {
 const Login = async (req, res) => {
   try {
     const serviceResponse = await AuthService.login(req);
-    if (serviceResponse.code !== 200)
-      return res.status(serviceResponse.code).json(serviceResponse);
-
-    res.cookie("accessToken", serviceResponse.data.accessToken, {
-      httpOnly: false,
-      sameSite: "None",
-      secure: true, 
-      maxAge: 15 * 60 * 1000,
-    });
-
-    res.cookie("refreshToken", serviceResponse.data.refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "Strict",
-      secure: true,
-    });
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
@@ -89,8 +49,6 @@ const Logout = async (req, res) => {
     const { refreshToken } = req.cookies;
     if (!refreshToken) throw noContentResponse("No Refresh token Provided");
 
-    res.clearCookie("refreshToken");
-
     return res.status(status.OK).json(
       apiResponse({
         code: status.OK,
@@ -105,13 +63,6 @@ const Logout = async (req, res) => {
 const RefreshToken = async (req, res) => {
   try {
     const serviceResponse = await AuthService.refreshToken(req);
-
-    res.cookie("accessToken", serviceResponse.data, {
-      maxAge: 15 * 60 * 1000,
-      sameSite: "None",
-      secure: true, 
-      httpOnly: false
-    });
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {

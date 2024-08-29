@@ -21,7 +21,7 @@ module.exports = {
   createOrder: async (req) => {
     try {
       const { email } = req.user;
-      const user = findUserByEmailWithCart(email);
+      const user = await findUserByEmailWithCart(email);
 
       const products = user.carts.flatMap((cart) =>
         cart.cartItems.map((item) => item.product)

@@ -3,7 +3,6 @@ const {
   apiResponse,
   notFoundResponse,
   badRequestResponse,
-  apiResponseValidationError,
 } = require("../../utils/apiResponse.utils");
 const { hashPassword } = require("../../utils/bcrypt.utils");
 const { exclude } = require("../../utils/excludeFields.utils");
@@ -16,7 +15,6 @@ const {
   findUserById,
   insertUser,
 } = require("../user/user.repository");
-const { oauth2, oauth2Client } = require("../../config/google.config");
 const nodemailer = require("nodemailer");
 const { insertCart } = require("../cart/cart.repository");
 const {
@@ -24,7 +22,6 @@ const {
   generateOAuthUsername,
 } = require("../../helpers/oauth.helper");
 const { google } = require("../../config/oauth.config");
-const { OAuth2Client } = require("google-auth-library");
 
 module.exports = {
   register: async (payload) => {
@@ -130,8 +127,8 @@ module.exports = {
   },
   refreshToken: async (req) => {
     try {
-      const { id } = req.refreshToken;
-      const user = await findUserById(parseInt(id));
+      const { email } = req.refreshToken;
+      const user = await findUserByEmail(email);
       if (!user) throw notFoundResponse("User");
 
       const accessToken = generateAccessToken(user);

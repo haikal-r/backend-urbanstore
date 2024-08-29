@@ -1,4 +1,4 @@
-const { unAuthorizedResponse, noContentResponse } = require("../utils/apiResponse.utils");
+const { unAuthorizedResponse, noContentResponse, badRequestResponse } = require("../utils/apiResponse.utils");
 const { verifyAccessToken, verifyRefreshToken } = require("../utils/jwt.utils");
 
 const tokenErr = (e) => {
@@ -29,7 +29,7 @@ module.exports = {
   refreshToken: (req, res, next) => {
     try {
       const { refreshToken } = req.body;
-      if (!refreshToken) throw noContentResponse("No Refresh Token Provided");
+      if (!refreshToken) throw badRequestResponse("No Refresh Token Provided");
 
       req.refreshToken = verifyRefreshToken(refreshToken);
       

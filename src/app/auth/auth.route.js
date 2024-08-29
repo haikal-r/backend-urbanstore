@@ -28,6 +28,6 @@ router.post("/logout", Logout);
 router.post("/send-email",SendEmailMiddleware, SendEmail)
 router.post("/forgot-password/:token", ForgotPasswordMiddleware, ForgotPassword)
 
-router.get("/refresh-token", refreshToken, RefreshToken);
+router.post("/refresh-token", refreshToken, RefreshToken);
 
 module.exports = router;

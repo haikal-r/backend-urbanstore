@@ -11,11 +11,7 @@ const GoogleLogin = async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
+    return res.status(e.code).json(e)
   }
 };
 
@@ -26,11 +22,7 @@ const Login = async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
+    return res.status(e.code).json(e)
   }
 };
 
@@ -66,11 +58,7 @@ const RefreshToken = async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
+    return res.status(e.code).json(e)
   }
 };
 
@@ -79,11 +67,7 @@ const Me = async (req, res) => {
     const serviceResponse = await AuthService.me(req.user);
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
+    return res.status(e.code).json(e)
   }
 };
 
@@ -93,11 +77,7 @@ const SendEmail = async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
+    return res.status(e.code).json(e)
   }
 };
 
@@ -107,11 +87,7 @@ const ForgotPassword = async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse(
-      e.code || status.INTERNAL_SERVER_ERROR,
-      e.status || "INTERNAL_SERVER_ERROR",
-      e.message
-    );
+    return res.status(e.code).json(e)
   }
 };
 

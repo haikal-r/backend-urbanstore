@@ -11,11 +11,7 @@ router.get("/", async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse({
-      code: e.code || status.INTERNAL_SERVER_ERROR,
-      status: e.status || "INTERNAL_SERVER_ERROR",
-      message: e.message,
-    });
+    return res.status(e.code).json(e);
   }
 });
 
@@ -26,11 +22,7 @@ router.get("/:id", async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse({
-      code: e.code || status.INTERNAL_SERVER_ERROR,
-      status: e.status || "INTERNAL_SERVER_ERROR",
-      message: e.message,
-    });
+    return res.status(e.code).json(e);
   }
 });
 
@@ -40,11 +32,7 @@ router.post("/", async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse({
-      code: e.code || status.INTERNAL_SERVER_ERROR,
-      status: e.status || "INTERNAL_SERVER_ERROR",
-      message: e.message,
-    });
+    return res.status(e.code).json(e);
   }
 });
 
@@ -55,11 +43,7 @@ router.delete("/:id", async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse({
-      code: e.code || status.INTERNAL_SERVER_ERROR,
-      status: e.status || "INTERNAL_SERVER_ERROR",
-      message: e.message,
-    });
+    return res.status(e.code).json(e);
   }
 });
 
@@ -69,11 +53,7 @@ router.patch("/:id", async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return apiResponse({
-      code: e.code || status.INTERNAL_SERVER_ERROR,
-      status: e.status || "INTERNAL_SERVER_ERROR",
-      message: e.message,
-    });
+    return res.status(e.code).json(e);
   }
 });
 
@@ -83,15 +63,7 @@ router.put("/:id", async (req, res) => {
 
     return res.status(serviceResponse.code).json(serviceResponse);
   } catch (e) {
-    return res
-      .status(e.code || status.INTERNAL_SERVER_ERROR)
-      .json(
-        apiResponse(
-          e.code || status.INTERNAL_SERVER_ERROR,
-          e.status || "INTERNAL_SERVER_ERROR",
-          e.message
-        )
-      );
+    return res.status(e.code).json(e);
   }
 });
 

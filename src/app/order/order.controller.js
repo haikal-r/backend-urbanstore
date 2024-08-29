@@ -9,11 +9,7 @@ module.exports = {
 
       res.status(serviceResponse.code).json(serviceResponse);
     } catch (e) {
-      return apiResponse(
-        e.code || status.INTERNAL_SERVER_ERROR,
-        e.status || "INTERNAL_SERVER_ERROR",
-        e.message
-      );
+      return res.status(e.code).json(e)
     }
   },
   getOrders: async (req, res) => {
@@ -22,11 +18,7 @@ module.exports = {
 
       res.status(serviceResponse.code).json(serviceResponse);
     } catch (e) {
-      return apiResponse(
-        e.code || status.INTERNAL_SERVER_ERROR,
-        e.status || "INTERNAL_SERVER_ERROR",
-        e.message
-      );
+      return res.status(e.code).json(e)
     }
   },
   updateOrder: async (req, res) => {
@@ -35,11 +27,7 @@ module.exports = {
 
       res.status(serviceResponse.code).json(serviceResponse);
     } catch (e) {
-      return apiResponse(
-        e.code || status.INTERNAL_SERVER_ERROR,
-        e.status || "INTERNAL_SERVER_ERROR",
-        e.message
-      );
+      return res.status(e.code).json(e)
     }
   },
   getOrder: async (req, res) => {
@@ -48,11 +36,7 @@ module.exports = {
 
       res.status(serviceResponse.code).json(serviceResponse);
     } catch (e) {
-      return apiResponse(
-        e.code || status.INTERNAL_SERVER_ERROR,
-        e.status || "INTERNAL_SERVER_ERROR",
-        e.message
-      );
+      return res.status(e.code).json(e)
     }
   },
 };

@@ -120,7 +120,7 @@ module.exports = {
         token: transaction.token,
       });
     } catch (e) {
-      return apiResponse(
+      throw apiResponse(
         e.code || status.INTERNAL_SERVER_ERROR,
         e.status || "INTERNAL_SERVER_ERROR",
         e.message || "Could not checkout, please try again later."

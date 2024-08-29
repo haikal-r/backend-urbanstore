@@ -17,6 +17,7 @@ const {
 const slugify = require("slugify");
 const { findProductById } = require("../product/product.repository");
 const { ProductTransformer } = require("../../helpers/product.transformer");
+const { findUserByEmail } = require("../user/user.repository");
 
 module.exports = {
   getStores: async (req) => {
@@ -41,10 +42,11 @@ module.exports = {
   },
   getStoreByUser: async (req) => {
     try {
-      const { id } = req.user;
+      const { email } = req.user;
+      const user = await findUserByEmail(email)
 
-      const store = await findStoreByUser(id);
-      if (!store) notFoundResponse("No store found!");
+      const store = await findStoreByUser(user.id);
+      if (!store) badRequestResponse("No store found!");
 
       return apiResponse(status.OK, "OK", "Success Fetching", store);
     } catch (e) {

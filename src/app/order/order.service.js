@@ -1,29 +1,17 @@
 const { StatusCodes: status } = require("http-status-codes");
 const {
-  getOrders,
   createOrder,
   createOrderItems,
   updateOrder,
-  getOrderById,
   getAllOrders,
   getOrdersByStatus,
 } = require("./order.repository");
 const {
   apiResponse,
-  notFoundResponse,
   badRequestResponse,
 } = require("../../utils/apiResponse.utils");
-const moment = require("moment");
-const crypto = require("crypto");
-const { findUserById, findUserByEmail } = require("../user/user.repository");
-const {
-  deleteCartItem,
-  findCartByUserId,
-  findCartItemsByCartId,
-  updateCartItem,
-} = require("../cart/cart.repository");
-const { ProductCartTransformer } = require("../../helpers/product.transformer");
-const { CartSummaryTransformer } = require("../../helpers/cart.transformer");
+const { findUserByEmailWithCart } = require("../user/user.repository");
+const { deleteCartItem } = require("../cart/cart.repository");
 const { Snap } = require("../../config/midtrans.config");
 const { generateOrderId } = require("../../utils/nanoid.utils");
 const { updateProduct } = require("../product/product.repository");
@@ -33,33 +21,38 @@ module.exports = {
   createOrder: async (req) => {
     try {
       const { email } = req.user;
-      const user = await findUserByEmail(email);
+      const user = findUserByEmailWithCart(email);
 
-      const data = await findCartByUserId(user.id);
-      const cartId = data.map((cart) => cart.id)[0];
-      const carts = await findCartItemsByCartId(cartId);
+      const products = user.carts.flatMap((cart) =>
+        cart.cartItems.map((item) => item.product)
+      );
+      const cartItems = user.carts.flatMap((cart) => cart.cartItems);
+      const grossAmount = cartItems.reduce((acc, item) => {
+        return acc + item.quantity * parseFloat(item.product.price);
+      }, 0);
 
-      const cartSummary = CartSummaryTransformer(carts);
-      const cartItems = carts.map((cart) => ProductCartTransformer(cart));
+      if (cartItems.length === 0) throw badRequestResponse("No Cart Items");
 
-      if (carts.length === 0) throw badRequestResponse("No Cart Items");
+      const orderId = await generateOrderId();
 
-      const order_id = await generateOrderId();
-      const gross_amount = Math.round(cartSummary.sub_total.raw);
+      const transformData = (rawItem) => {
+        const { product } = rawItem;
+        return {
+          id: product.id,
+          price: Number(product.price),
+          quantity: rawItem.quantity,
+          name: product.name,
+          category: product.categoryId,
+          merchant_id: product.storeId,
+        };
+      };
 
-      const itemDetails = cartItems.map((item) => ({
-        id: item.productId,
-        price: item.price,
-        quantity: item.quantity,
-        name: item.name,
-        category: item.categoryId || "electronics",
-        merchant_id: item.storeId,
-      }));
+      const itemDetails = cartItems.map((data) => transformData(data));
 
       const parameter = {
         transaction_details: {
-          order_id,
-          gross_amount,
+          order_id: orderId,
+          gross_amount: Math.round(grossAmount),
         },
         credit_card: {
           secure: true,
@@ -79,9 +72,9 @@ module.exports = {
       const transaction = await Snap.createTransaction(parameter);
 
       await createOrder({
-        id: order_id,
+        id: orderId,
         token: transaction.token,
-        totalPrice: cartSummary.sub_total.raw,
+        totalPrice: grossAmount,
         User: {
           connect: {
             id: user.id,
@@ -91,26 +84,26 @@ module.exports = {
 
       const orderItemPayload = cartItems.map((item) => ({
         quantity: item.quantity,
-        orderId: order_id,
-        productId: item.productId,
-        price: item.price,
-        storeId: item.storeId,
+        orderId: orderId,
+        productId: item.product.id,
+        price: item.product.price,
+        storeId: item.product.storeId,
       }));
       await createOrderItems(orderItemPayload);
 
       if (cartItems.length === 1) {
-        const productId = cartItems[0].productId
-        const productStock = cartItems[0].stock - cartItems[0].quantity;
-        const cartItemId = cartItems[0].id
+        const productId = products[0].id;
+        const productStock = products[0].stock - cartItems[0].quantity;
+        const cartItemId = cartItems[0].id;
 
         await updateProduct(productId, productStock);
         await deleteCartItem(cartItemId);
       } else {
         const productIds = cartItems.map((item) => item.productId);
         const productStocks = cartItems.map(
-          (item) => item.stock - item.quantity
+          (item) => item.product.stock - item.quantity
         );
-        const cartItemIds = cartItems.map(item => item.id)
+        const cartItemIds = cartItems.map((item) => item.id);
 
         await updateProduct(productIds, productStocks);
         await deleteCartItem(cartItemIds);

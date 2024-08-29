@@ -20,7 +20,28 @@ const findUserByEmail = async (email) => {
   const user = await prisma.user.findUnique({
     where: {
       email: email,
+    }
+  });
+
+  return user;
+};
+
+const findUserByEmailWithCart = async (email) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
     },
+    include: {
+      carts: {
+        include: {
+          cartItems: {
+            include: {
+              product: true
+            }
+          }
+        }
+      }
+    }
   });
 
   return user;
@@ -73,4 +94,5 @@ module.exports = {
   findUserById,
   deleteUser,
   editUser,
+  findUserByEmailWithCart
 };

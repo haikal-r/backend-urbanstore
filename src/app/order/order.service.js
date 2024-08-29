@@ -131,7 +131,7 @@ module.exports = {
       if (statusOrder) {
         orders = await getOrdersByStatus(user.id, statusOrder.toUpperCase());
       } else {
-        orders = await getAllOrders(id);
+        orders = await getAllOrders(user.id);
       }
 
       const transformOrder = orders.map((order) => OrderTransformer(order));

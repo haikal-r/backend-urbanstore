@@ -123,7 +123,7 @@ module.exports = {
       return apiResponse(
         e.code || status.INTERNAL_SERVER_ERROR,
         e.status || "INTERNAL_SERVER_ERROR",
-        e.message
+        e.message || "Could not checkout, please try again later."
       );
     }
   },

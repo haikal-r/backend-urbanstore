@@ -127,7 +127,8 @@ module.exports = {
   createStore: async (req) => {
     try {
       const { name, description } = req.body;
-      const { user } = req;
+      const { email } = req.user;
+      const user = await findUserByEmail(email)
 
       const payload = {
         name,

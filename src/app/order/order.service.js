@@ -10,7 +10,7 @@ const {
   apiResponse,
   badRequestResponse,
 } = require("../../utils/apiResponse.utils");
-const { findUserByEmailWithCart } = require("../user/user.repository");
+const { findUserByEmailWithCart, findUserByEmail } = require("../user/user.repository");
 const { deleteCartItem } = require("../cart/cart.repository");
 const { Snap } = require("../../config/midtrans.config");
 const { generateOrderId } = require("../../utils/nanoid.utils");
@@ -122,12 +122,14 @@ module.exports = {
   },
   getOrders: async (req) => {
     try {
-      const { id } = req.user;
+      const { email } = req.user;
       const { status: statusOrder } = req.query;
+
+      const user  = await findUserByEmail(email)
 
       let orders;
       if (statusOrder) {
-        orders = await getOrdersByStatus(id, statusOrder.toUpperCase());
+        orders = await getOrdersByStatus(user.id, statusOrder.toUpperCase());
       } else {
         orders = await getAllOrders(id);
       }

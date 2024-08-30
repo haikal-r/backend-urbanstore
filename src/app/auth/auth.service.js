@@ -140,7 +140,7 @@ module.exports = {
         accessToken
       );
     } catch (e) {
-      return apiResponse(
+      throw apiResponse(
         e.code || status.INTERNAL_SERVER_ERROR,
         e.status || "INTERNAL_SERVER_ERROR",
         e.message

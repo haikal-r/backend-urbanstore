@@ -23,31 +23,23 @@ module.exports = {
       const { email } = req.user;
       const user = await findUserByEmailWithCart(email);
 
-      const products = user.carts.flatMap((cart) =>
-        cart.cartItems.map((item) => item.product)
-      );
       const cartItems = user.carts.flatMap((cart) => cart.cartItems);
+      if (cartItems.length === 0) throw badRequestResponse("No Cart Items");
+
       const grossAmount = cartItems.reduce((acc, item) => {
         return acc + item.quantity * parseFloat(item.product.price);
       }, 0);
 
-      if (cartItems.length === 0) throw badRequestResponse("No Cart Items");
-
       const orderId = await generateOrderId();
 
-      const transformData = (rawItem) => {
-        const { product } = rawItem;
-        return {
-          id: product.id,
-          price: Number(product.price),
-          quantity: rawItem.quantity,
-          name: product.name,
-          category: product.categoryId,
-          merchant_id: product.storeId,
-        };
-      };
-
-      const itemDetails = cartItems.map((data) => transformData(data));
+      const itemDetails = cartItems.map((item) => ({
+        id: item.product.id,
+        price: Number(item.product.price),
+        quantity: item.quantity,
+        name: item.product.name,
+        category: item.product.categoryId,
+        merchant_id: item.product.storeId,
+      }));
 
       const parameter = {
         transaction_details: {
@@ -91,23 +83,15 @@ module.exports = {
       }));
       await createOrderItems(orderItemPayload);
 
-      if (cartItems.length === 1) {
-        const productId = products[0].id;
-        const productStock = products[0].stock - cartItems[0].quantity;
-        const cartItemId = cartItems[0].id;
-
-        await updateProduct(productId, productStock);
-        await deleteCartItem(cartItemId);
-      } else {
-        const productIds = cartItems.map((item) => item.productId);
-        const productStocks = cartItems.map(
-          (item) => item.product.stock - item.quantity
-        );
-        const cartItemIds = cartItems.map((item) => item.id);
-
-        await updateProduct(productIds, productStocks);
-        await deleteCartItem(cartItemIds);
-      }
+      const productUpdatePromises = cartItems.map((item) => 
+        updateProduct(item.product.id, item.product.stock - item.quantity)
+      );
+      await Promise.all(productUpdatePromises);
+  
+      const cartItemDeletePromises = cartItems.map((item) => 
+        deleteCartItem(item.id)
+      );
+      await Promise.all(cartItemDeletePromises);
 
       return apiResponse(status.OK, "OK", "Success Create orders", {
         token: transaction.token,

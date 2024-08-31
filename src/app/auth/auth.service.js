@@ -57,8 +57,10 @@ module.exports = {
       const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshToken(user);
 
+      const data = exclude(user, ["createdAt", "updatedAt"]);
+
       return apiResponse(status.OK, "OK", "Success Login", {
-        data: user,
+        data: data,
         accessToken,
         refreshToken,
       });
@@ -95,7 +97,7 @@ module.exports = {
           email: dataGoogle.email,
           picture: dataGoogle.picture,
         });
-        const data = exclude(newUser, ["id", "createdAt", "updatedAt"]);
+        const data = exclude(newUser, ["createdAt", "updatedAt"]);
         const accessToken = generateAccessToken(data);
         const refreshToken = generateRefreshToken(data);
 
@@ -108,7 +110,7 @@ module.exports = {
         });
       }
 
-      const data = exclude(user, ["id", "createdAt", "updatedAt"]);
+      const data = exclude(user, ["createdAt", "updatedAt"]);
       const accessToken = generateAccessToken(data);
       const refreshToken = generateRefreshToken(data);
 

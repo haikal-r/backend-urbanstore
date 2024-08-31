@@ -38,9 +38,9 @@ module.exports = {
   },
   getCart: async (req) => {
     try {
-      const { user } = req;
+      const { id } = req.user;
 
-      const carts = await findCartByUserId(user.id);
+      const carts = await findCartByUserId(id);
       const cartItems = carts[0].cartItems;
 
       const cartSummary = CartSummaryTransformer(cartItems);
